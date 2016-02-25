@@ -1,61 +1,71 @@
+//------------------------------------------------------------------------------------------
+//          Name		Candelario D. Eguia
+//          Course		CMPS-455
+//          Project		No.2
+//          Due date	Feb. 26, 2015
+//          Professor	Ray Ahmadnia
+//
+// This program displays:
+//       Evaluate postfix expressions with multiple letter variables
+//------------------------------------------------------------------------------------------
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <string>
+#include <string>							// used to compare variables in the stack
 #include <cstring>
 
 using namespace std;
 
-struct Dataset
+struct Dataset								// Store string and associated integers
 {
 	string chars;
 	int	value;
 	~Dataset() {};
 };
 
-template<class T>		//allow any type of data to be saved
-class STACK 
+template<class T>							// allow any type of data to be saved
+class STACK									// Create a Linklist Stack for the evaluation
 {
-private:		//create a data type containing
-	struct NODE {
-		T info;				// the info to be retreved / saved
-		NODE *next;			// the link to the next item in the list
+private:					
+	struct NODE {							// Create a data type containing
+		T info;								// the info to be retreved / saved
+		NODE *next;							// the link to the next item in the list
 	};
-	NODE *top;				// Current top of stack
+	NODE *top;								// Holds the current top of stack
 public:
-	void CreateTop() {
+	void CreateTop() {						// Creates a new Node
 		NODE *temp;
 		temp = new (NODE);
 		temp->next = top;
 		top = temp;
 	}
-	void PushStack(int x) {
+	void PushStack(int x) {					// Used to push a new integer onto the stack
 		CreateTop();
 		top->info = x;
 	}
-	void PushStack(int x, string var) {
+	void PushStack(int x, string var) {		// Used to push a new variable and value
 		CreateTop();
 		top->info.value = x;
 		top->info.chars = var;
 	}
-	int PopStack()
+	int PopStack()							// Returns Value deletes node
 	{
 		NODE *temp = top;
 		int x = temp->info;
-		top = temp->next;
-		delete temp;
-		return x;
+		top = temp->next;					// Replaces the top of stack node 
+		delete temp;						// Deletes the old node on top of stack
+		return x;							// Returns value
 	}
-	int Exists(string var) {
+	int Exists(string var) {				// Returns NULL or variable value
 			NODE *temp = top;
-			while (temp != NULL) {
+			while (temp != NULL) {			// Loops through nodes
 				if (temp->info.chars == var) {
-					return temp->info.value;
+					return temp->info.value;	// Returns value
 				}
-				temp = temp->next;
+				temp = temp->next;			// sets the next node in the stack
 			}
-			return NULL;
+			return NULL;					// Returns NULL if not found
 		}
-	~STACK() {
+	~STACK() {								// Deletes any nodes left in the stack
 		NODE *temp = top;
 		while (temp != NULL) {
 			temp = temp->next;
@@ -70,32 +80,32 @@ int main() {
 
 	do
 	{
-		STACK<int> expression;
-		STACK<Dataset> vars;
-		char *token;
-		char sent[80];
+		STACK<int> expression;				// Stores integers and calculation results
+		STACK<Dataset> vars;				// Stores the Variable and integer set
+		char *token;						// Pointer to character array
+		char sent[80];						// Holds the Expression
 		
 		cout << "Enter a postfix expression with a $ at the end: "; cin.getline(sent, 80);
-		token = strtok(sent, " ");		//tokenize this statement
+		token = strtok(sent, " ");			//tokenize this statement
 
 		while (token != NULL) {
 			if (token[0] >= '0' && token[0] <= '9'){ 
-				expression.PushStack(atoi(token));		//converts charactrs to numbers
+				expression.PushStack(atoi(token));		// Converts charactrs to numbers
 			}
 			else if ((token[0] >= 'a' && token[0] <= 'z') || (token[0] >= 'A' && token[0] <= 'Z') ){
-				string variable = token;
-				int value = vars.Exists(variable);
-				if (value != NULL) {
-					expression.PushStack(value);
+				string variable = token;			// Stores character array as a string
+				int value = vars.Exists(variable);		// gets variable int or NULL
+				if (value != NULL) {					
+					expression.PushStack(value);		// Places value on the stack
 				}
 				else {
 					cout<< "\tEnter the value of " << variable << ": "; cin >> value;
-					vars.PushStack(value, variable);
-					expression.PushStack(value);
+					vars.PushStack(value, variable);	// Pushes character(s) and interger
+					expression.PushStack(value);		// Pushes integer to the stack
 				}
 			}
 			else {
-				switch (token[0])
+				switch (token[0])			// Preformes Calculations based on opperator
 				{
 					int first, second, num, den;
 				case '+':
@@ -122,7 +132,7 @@ int main() {
 					break;
 				}
 			}
-			token = strtok(NULL, " ");
+			token = strtok(NULL, " ");				// gets the next char array
 		}
 		cout << "\tContinue (y/n)? "; cin >> cont; cont = toupper(cont);
 		cout << endl;
@@ -132,3 +142,18 @@ int main() {
 	system("pause");
 	return 0;
 }
+/*---------------------------- OUTPUT ------------------------------------------------------
+Enter a postfix expression with a $ at the end: ab 22 * c + $
+        Enter the value of ab: 2
+        Enter the value of c: 4
+                Final value = 48
+        Continue (y/n)? y
+
+Enter a postfix expression with a $ at the end: tom jerry 123 + tom * - $
+        Enter the value of tom: 2
+        Enter the value of jerry: 3
+                Final value = -250
+        Continue (y/n)? n
+
+Press any key to continue . . .
+------------------------------------------------------------------------------------------*/
