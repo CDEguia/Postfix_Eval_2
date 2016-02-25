@@ -10,14 +10,13 @@
 //------------------------------------------------------------------------------------------
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <string>							// used to compare variables in the stack
 #include <cstring>
 
 using namespace std;
 
 struct Dataset								// Store string and associated integers
 {
-	string chars;
+	char *chars;
 	int	value;
 	~Dataset() {};
 };
@@ -42,7 +41,7 @@ public:
 		CreateTop();
 		top->info = x;
 	}
-	void PushStack(int x, string var) {		// Used to push a new variable and value
+	void PushStack(int x, char *var) {		// Used to push a new variable and value
 		CreateTop();
 		top->info.value = x;
 		top->info.chars = var;
@@ -55,16 +54,16 @@ public:
 		delete temp;						// Deletes the old node on top of stack
 		return x;							// Returns value
 	}
-	int Exists(string var) {				// Returns NULL or variable value
-			NODE *temp = top;
-			while (temp != NULL) {			// Loops through nodes
-				if (temp->info.chars == var) {
-					return temp->info.value;	// Returns value
-				}
-				temp = temp->next;			// sets the next node in the stack
+	int Exists(char *var) {				// Returns NULL or variable value
+		NODE *temp = top;
+		while (temp != NULL) {			// Loops through nodes
+			if (*temp->info.chars == *var) { // * used to compare contents
+				return temp->info.value;	// Returns value
 			}
-			return NULL;					// Returns NULL if not found
+			temp = temp->next;			// sets the next node in the stack
 		}
+		return NULL;					// Returns NULL if not found
+	}
 	~STACK() {								// Deletes any nodes left in the stack
 		NODE *temp = top;
 		while (temp != NULL) {
@@ -93,14 +92,13 @@ int main() {
 				expression.PushStack(atoi(token));		// Converts charactrs to numbers
 			}
 			else if ((token[0] >= 'a' && token[0] <= 'z') || (token[0] >= 'A' && token[0] <= 'Z') ){
-				string variable = token;			// Stores character array as a string
-				int value = vars.Exists(variable);		// gets variable int or NULL
+				int value = vars.Exists(token);		// gets token int or NULL
 				if (value != NULL) {					
 					expression.PushStack(value);		// Places value on the stack
 				}
 				else {
-					cout<< "\tEnter the value of " << variable << ": "; cin >> value;
-					vars.PushStack(value, variable);	// Pushes character(s) and interger
+					cout<< "\tEnter the value of " << token << ": "; cin >> value;
+					vars.PushStack(value, token);	// Pushes character(s) and interger
 					expression.PushStack(value);		// Pushes integer to the stack
 				}
 			}
