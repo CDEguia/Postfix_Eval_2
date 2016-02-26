@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------
 //          Name		Candelario D. Eguia
+//			Name		Jeremy Driesler
 //          Course		CMPS-455
 //          Project		No.2
 //          Due date	Feb. 26, 2015
